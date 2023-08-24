@@ -26,7 +26,5 @@ public class BookController {
     }
 
     //Devolver solo uno
-    public Book findOneById(Long id){
-
-    }
+    //public Book findOneById(Long id)
 }
