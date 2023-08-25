@@ -2,6 +2,8 @@ package com.example.springBoot.controller;
 
 import com.example.springBoot.entities.Book;
 import com.example.springBoot.repository.BookRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,9 @@ import java.util.Optional;
 
 @RestController
 public class BookController {
+
+    //Logs
+    private final Logger log = LoggerFactory.getLogger(BookController.class);
 
     //atributos
     private BookRepository repository;
@@ -48,8 +53,54 @@ public class BookController {
 
     //Guardar libro
     @PostMapping("/api/books")
-    public Book crear(@RequestBody Book book, @RequestHeader HttpHeaders headers){
+    public ResponseEntity<Book> crear(@RequestBody Book book, @RequestHeader HttpHeaders headers){
         System.out.println(headers.get("User-Agent"));
-        return repository.save(book);
+
+        //Validacion si ya hay un id creado
+        if (book.getId() !=null){
+            log.warn("Trying to create a book with id");
+            System.out.println("Desde el sistem");
+            return ResponseEntity.badRequest().build();
+        }
+        Book result = repository.save(book);
+        return ResponseEntity.ok(result);
+    }
+
+    //Actualizar libro
+    @PutMapping("/api/books")
+    public ResponseEntity<Book> update(@RequestBody  Book book){
+        //Que ingresen un id
+        if (book.getId() == null){
+            log.warn("Trying to update a non existen book");
+            return ResponseEntity.badRequest().build();
+        }
+
+        //Si el libro existe
+        if (!repository.existsById(book.getId())){
+            log.warn("The book was not found");
+            return ResponseEntity.notFound().build();
+        }
+
+        Book result = repository.save(book);
+        return ResponseEntity.ok(result);
+    }
+
+    //Delete
+    @DeleteMapping("/api/books/{id}")
+    public ResponseEntity<Book> delete(@PathVariable Long id){
+
+        if (!repository.existsById(id)){
+            log.warn("The book was not found");
+            return ResponseEntity.notFound().build();
+        }
+        repository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    //Delete all
+    @DeleteMapping("/api/books")
+    public  ResponseEntity<Book> deleteAll(){
+        repository.deleteAll();
+        return ResponseEntity.noContent().build();
     }
 }
