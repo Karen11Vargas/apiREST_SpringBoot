@@ -17,15 +17,13 @@ public class Application {
 	}
 
 	@Bean
-	public OpenAPI customOpenAPI(){
+	public OpenAPI customOpenAPI() {
 		return new OpenAPI()
 				.info(new Info()
 						.title("Spring Boot Api REST")
 						.version("1.0")
 						.description("Library Api rest docs")
-						.termsOfService("http://www.google.com")
-				);
-
+						.termsOfService("http://www.google.com"));
 
 	}
 }
